@@ -14,9 +14,10 @@ func init() {
 type SMTP struct{}
 
 type options struct {
-	Subject string   `js:"subject"`
-	Message string   `js:"message"`
-	UDW     []string `js:"udw"`
+	Subject string            `js:"subject"`
+	Message string            `js:"message"`
+	UDW     []string          `js:"udw"`
+	Headers map[string]string `js:"headers"`
 }
 
 func check(e error) {
@@ -32,6 +33,10 @@ func plainAuth(host string, password string, sender string) smtp.Auth {
 func (*SMTP) SendMail(host string, port string, sender string, password string, recipient string, options options) {
 	emailMessage := "From: " + sender + "\r\n" + "To: " + recipient + "\r\n"
 
+	for key, val := range options.Headers {
+		emailMessage += key + ": " + val + "\r\n"
+	}
+
 	if options.Subject != "" {
 		emailMessage += "Subject: " + options.Subject + "\r\n\r\n"
 	}
@@ -45,7 +50,12 @@ func (*SMTP) SendMail(host string, port string, sender string, password string, 
 	}
 
 	body := []byte(emailMessage)
-	auth := plainAuth(host, password, sender)
-	err := smtp.SendMail(host+":"+port, auth, sender, options.UDW, body)
-	check(err)
+	if password != "" {
+		auth := plainAuth(host, password, sender)
+		err := smtp.SendMail(host+":"+port, auth, sender, options.UDW, body)
+		check(err)
+	} else {
+		err := smtp.SendMail(host+":"+port, nil, sender, options.UDW, body)
+		check(err)
+	}
 }
