@@ -33,8 +33,10 @@ func plainAuth(host string, password string, sender string) smtp.Auth {
 func (*SMTP) SendMail(host string, port string, sender string, password string, recipient string, options options) {
 	emailMessage := "From: " + sender + "\r\n" + "To: " + recipient + "\r\n"
 
-	for key, val := range options.Headers {
-		emailMessage += key + ": " + val + "\r\n"
+	if len(options.Headers) > 0 {
+		for key, val := range options.Headers {
+			emailMessage += key + ": " + val + "\r\n"
+		}
 	}
 
 	if options.Subject != "" {
