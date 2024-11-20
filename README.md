@@ -5,7 +5,7 @@
 ## Build
 
 ```shell
-xk6 build --with github.com/bradleyeric95/xk6-smtp@latest
+xk6 build --with github.com/gpiechnik2/xk6-smtp@latest
 ```
 
 ## Example
